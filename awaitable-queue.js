@@ -28,13 +28,14 @@ export default class AwaitableQueue {
     async #dequeue() {
         if (this.#queue.length) {
             let { func, id } = await this.#queue.shift();
-            let result = await func.call();
-            if (result == 3) {
-                this.#emmiter.emit(`${id}`, new Error('reject message'))
+            let result = null;
+            try {
+                result = await func.call();
             }
-            else {
-                this.#emmiter.emit(`${id}`, result);
+            catch (err) {
+                result = err;
             }
+            this.#emmiter.emit(`${id}`, result);
         }
         else {
             this.#flag = false;
