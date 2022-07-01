@@ -13,7 +13,7 @@ export default class AwaitableQueue {
         let id = this.#id++;
         this.#queue.push({ func: func, id: id });
         if (!this.#flag)
-            this.dequeue();
+            this.#dequeue();
         this.#flag = true;
         return new Promise((resolve, reject) => {
             this.#emmiter.once(`${id}`, e => {
@@ -25,7 +25,7 @@ export default class AwaitableQueue {
             })
         });
     }
-    async dequeue() {
+    async #dequeue() {
         if (this.#queue.length) {
             let { func, id } = await this.#queue.shift();
             let result = await func.call();
@@ -40,7 +40,7 @@ export default class AwaitableQueue {
             this.#flag = false;
             return;
         }
-        await this.dequeue();
+        await this.#dequeue();
 
     }
 }
