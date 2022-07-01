@@ -4,12 +4,11 @@ import { EventEmitter } from 'events';
 export default class AwaitableQueue {
     #emmiter = new EventEmitter();
     #queue = [];
-    #id = 1000;
+    #id = 0;
     #flag = false;
     constructor() {
     }
     add(func) {
-        if (this.#id == 1002) this.#id = 0;
         let id = this.#id++;
         this.#queue.push({ func: func, id: id });
         if (!this.#flag)
