@@ -1,4 +1,5 @@
-//@ts-check
+'use strict';
+
 import { EventEmitter } from 'events';
 
 export default class AwaitableQueue {
@@ -10,13 +11,12 @@ export default class AwaitableQueue {
     }
     add(func) {
         let id = this.#id++;
-        this.#queue.push({ func: func, id: id });
+        this.#queue.push({ func, id });
         if (!this.#flag)
             this.#dequeue();
         this.#flag = true;
         return new Promise((resolve, reject) => {
-            this.#emmiter.once(`${id}`, e => {
-                // console.log(e);
+            this.#emmiter.once(`${id}`, (e) => {
                 if (e instanceof Error)
                     reject(e)
                 else
@@ -26,7 +26,7 @@ export default class AwaitableQueue {
     }
     async #dequeue() {
         if (this.#queue.length) {
-            let { func, id } = await this.#queue.shift();
+            const { func, id } = await this.#queue.shift();
             let result = null;
             try {
                 result = await func.call();
